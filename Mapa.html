@@ -1,52 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>ADA Project</title>
-	<link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:ital,wght@1,300&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Squada+One&display=swap" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="./CSS/style.css">
-	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css">
-</head>
-<body>
-	<div class="row main-container middle-xs center-xs">
-		<div class="col-md-8 col-sm-10 col-xs-11 col-lg-7">
-			<div class="box">
-				<div class="card animated fadeInUp">
-					<header class="main-header">
-					<nav class="main-nav">
-						<a href="index.html" class="nav-link">Inicio</a>
-						<a href="presentacion.html" class="nav-link" >Presentacion</a>
-						<a href="menu.html" class="nav-link">Menu</a>
-						<a href="https://www.cs.buap.mx/~zacarias/FZF/" target="_blank" rel="noopener noreferrer" class="nav-link">Pagina del profesor</a
-						>
-						<a href="Mapa.html"  class="nav-link">Trazar Rutas</a>
-					</nav>	
-					</header>
-					<div>
-					<header  class="text-center ">
-						<img src="./Imagenes/LogoD.jpg" height="200px" alt="Imagen orientada a programacion" >
-						<h1 class="title_font threeD">Trazado de rutas</h1>
-						</header>
-						<div class="">
-						<p>Cd Universitaria, 72592 Puebla, Pue.</p>
-						<p>
-						<a href="mailto:sorianoisrael606@gmail.com">Clic aqui para escribirnos un correo </a> 
-						</p>
-						<p></p>
-						<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15089.701503142309!2d-98.20933768144528!3d19.00096858272244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cfbf5e12520371%3A0x471e3afdf138fca5!2sCd%20Universitaria%2C%2072592%20Puebla%2C%20Pue.!5e0!3m2!1ses!2smx!4v1604371121163!5m2!1ses!2smx" width="800" height="600" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
-						</div>
-						<h2 class="red-text title_font threeD">Titulo Principal</h1>
-					</div>
-				</div>
-				
-			</div>
-		</div>	
 
-	</div>
-	
-	
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADA Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:ital,wght@1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Squada+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="./CSS/style.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8Lqfxz2f4eL5krU3uLkKEJ0b7qf_Xblo&callback=initMap&libraries=&v=weekly" defer></script>
+    <script>
+        function CenterControl(controlDiv, map, trafficLayer, bandera) {
+            // Set CSS for the control border.
+            const controlUI = document.createElement("div");
+            controlUI.style.backgroundColor = "#fff";
+            controlUI.style.border = "2px solid #fff";
+            controlUI.style.borderRadius = "3px";
+            controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+            controlUI.style.cursor = "pointer";
+            controlUI.style.marginBottom = "22px";
+            controlUI.style.textAlign = "center";
+            controlUI.title = "Trafico";
+            controlDiv.appendChild(controlUI);
+            // Set CSS for the control interior.
+            const controlText = document.createElement("div");
+            controlText.style.color = "rgb(25,25,25)";
+            controlText.style.fontFamily = "Roboto,Arial,sans-serif";
+            controlText.style.fontSize = "16px";
+            controlText.style.lineHeight = "38px";
+            controlText.style.paddingLeft = "5px";
+            controlText.style.paddingRight = "5px";
+            controlText.innerHTML = "Trafico";
+            controlUI.appendChild(controlText);
+            // Setup the click event listeners: simply set the map to Chicago.
+            controlUI.addEventListener("click", () => {
+                if (bandera == -1) {
+                    trafficLayer.setMap(map);
+                }
+                if (bandera == 1) {
+                    trafficLayer.setMap(null);
+                }
+                bandera = bandera * -1;
+            });
+        }
+
+        function moveBus(map, marker, Lat, Lng) {
+
+            marker.setPosition(new google.maps.LatLng(Lat, Lng));
+
+        };
+
+        // Initialize and add the map
+        function initMap() {
+
+            var directionsRenderer = new google.maps.DirectionsRenderer();
+
+            const puebla = {
+                lat: 18.549599,
+                lng: -98.0187898
+            };
+            var bandera = -1;
+            const trafficLayer = new google.maps.TrafficLayer();
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 7,
+                center: puebla,
+            });
+
+            var icon = {
+                url: "../Imagenes/persona.png", // url
+                scaledSize: new google.maps.Size(25, 25), // scaled size
+                origin: new google.maps.Point(0, 0), // origin
+                anchor: new google.maps.Point(0, 0) // anchor
+            };
+
+            var marker = new google.maps.Marker({
+                position: puebla,
+                map: map,
+                draggable: true,
+                icon: icon
+            });
+            // Get a reference to the database service
+            var ref = firebase.database().ref("User");
+            ref.on("value", function(snapshot) {
+                var latitud = snapshot.child("location/latitude").val(); // "last"
+                var longitud = snapshot.child("location/longitude").val(); // "last"
+                moveBus(map, marker, latitud, longitud);
+            });
+
+
+            const centerControlDiv = document.createElement("div");
+            CenterControl(centerControlDiv, map, trafficLayer, bandera);
+            map.controls[google.maps.ControlPosition.RIGHT_CENTER].push(centerControlDiv);
+
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="row main-container middle-xs center-xs">
+        <div class="col-md-8 col-sm-10 col-xs-11 col-lg-7">
+            <div class="box">
+                <div class="card animated fadeInUp">
+                    <header class="main-header">
+                        <nav class="main-nav">
+                            <a href="index.html" class="nav-link">Inicio</a>
+                            <a href="presentacion.html" class="nav-link">Presentacion</a>
+                            <a href="menu.html" class="nav-link">Menu</a>
+                            <a href="https://www.cs.buap.mx/~zacarias/FZF/" target="_blank" rel="noopener noreferrer" class="nav-link">Pagina del profesor</a>
+                            <a href="Mapa.html" class="nav-link">Trazar Rutas</a>
+                        </nav>
+                    </header>
+                    <div>
+                        <header class="text-center ">
+                            <img src="./Imagenes/LogoD.jpg" height="200px" alt="Imagen orientada a programacion">
+                            <h1 class="title_font threeD">Trazado de rutas</h1>
+                        </header>
+                        <div class="">
+                            <p>Cd Universitaria, 72592 Puebla, Pue.</p>
+                            <p>
+                                <a href="mailto:sorianoisrael606@gmail.com">Clic aqui para escribirnos un correo </a>
+                            </p>
+                            <p></p>
+                            <div id="map"></div>
+                            <!--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15089.701503142309!2d-98.20933768144528!3d19.00096858272244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cfbf5e12520371%3A0x471e3afdf138fca5!2sCd%20Universitaria%2C%2072592%20Puebla%2C%20Pue.!5e0!3m2!1ses!2smx!4v1604371121163!5m2!1ses!2smx" width="800" height="600" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe> -->
+                        </div>
+                        <h2 class="red-text title_font threeD">Titulo Principal</h2>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.7/firebase.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDCUYxvRO8vcKaBDoilMyeHwLsWZOemVlQ",
+            authDomain: "trackerapp-b9893.firebaseapp.com",
+            databaseURL: "https://trackerapp-b9893.firebaseio.com",
+            projectId: "trackerapp-b9893",
+            storageBucket: "trackerapp-b9893.appspot.com",
+            messagingSenderId: "638686004504",
+            appId: "1:638686004504:web:b81ac6847da3b8a2b38a6d"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+    </script>
 </body>
-</html> 
+
+</html>
