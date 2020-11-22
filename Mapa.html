@@ -44,22 +44,86 @@
                 }
                 bandera = bandera * -1;
             });
-        }
+        };
 
         function moveBus(map, marker, Lat, Lng) {
 
-            marker.setPosition(new google.maps.LatLng(Lat, Lng));
+            try {
+                marker.setPosition(new google.maps.LatLng(Lat, Lng));
+            } catch (e) {
+
+            }
 
         };
 
+        function addMarker(location, map, nombre, unidad, arreglo, i) {
+
+            var label = {
+                text: unidad,
+                color: "black",
+                fontSize: "20px",
+            }
+
+            var icon = {
+                url: "./Imagenes/carro.png", // url
+                scaledSize: new google.maps.Size(15, 30), // scaled size
+                origin: new google.maps.Point(0, 0), // origin
+                anchor: new google.maps.Point(0, 0) // anchor
+            };
+
+
+            // Add the marker at the clicked location, and add the next-available label
+            // from the array of alphabetical characters.
+            arreglo[i] = new google.maps.Marker({
+                position: location,
+                label: label,
+                map: map,
+                draggable: true,
+                icon: icon
+            });
+
+
+            var mensaje = "Nombre: " + nombre + "\n" + "Unidad: " + unidad;
+
+            var infoWindow = new google.maps.InfoWindow({
+                content: mensaje
+            });
+
+            google.maps.event.addListener(arreglo[i], 'click', function() {
+                infoWindow.open(map, arreglo[i]);
+            });
+            return arreglo;
+        };
+
+        function agregar(location, map) {
+            new google.maps.Marker({
+                position: location,
+                map: map,
+                draggable: true
+            });
+        }
         // Initialize and add the map
         function initMap() {
 
+            var conductores = [];
+            var marker;
             var directionsRenderer = new google.maps.DirectionsRenderer();
+            var ruta1 = [
+                [17.95746608, -97.8673808],
+                [17.95834204, -97.8652153],
+                [17.95885852, -97.86520862],
+                [17.95905074, -97.86602113],
+                [17.95917549, -97.86569327],
+                [17.95986467, -97.86816984]
+            ];
 
             const puebla = {
                 lat: 18.549599,
                 lng: -98.0187898
+            };
+            var actual = {
+                lat: 0,
+                lng: 0
             };
             var bandera = -1;
             const trafficLayer = new google.maps.TrafficLayer();
@@ -67,34 +131,25 @@
                 zoom: 7,
                 center: puebla,
             });
-
-            var icon = {
-                url: "../Imagenes/persona.png", // url
-                scaledSize: new google.maps.Size(25, 25), // scaled size
-                origin: new google.maps.Point(0, 0), // origin
-                anchor: new google.maps.Point(0, 0) // anchor
-            };
-
-            var marker = new google.maps.Marker({
-                position: puebla,
-                map: map,
-                draggable: true,
-                icon: icon
-            });
             // Get a reference to the database service
             var ref = firebase.database().ref("User");
-            ref.on("value", function(snapshot) {
-                var latitud = snapshot.child("location/latitude").val(); // "last"
-                var longitud = snapshot.child("location/longitude").val(); // "last"
-                moveBus(map, marker, latitud, longitud);
+            ref.once("value", function(snapshot) {
+                var nombre = snapshot.child("nombre").val();
+                var unidad = snapshot.child("unidad").val();
+                actual.lat = snapshot.child("location/latitude").val();
+                actual.lng = snapshot.child("location/longitude").val();
+                addMarker(actual, map, nombre, unidad, conductores, 0);
             });
-
-
+            ref.on("value", function(snapshot) {
+                var latitud = snapshot.child("location/latitude").val();
+                var longitud = snapshot.child("location/longitude").val();
+                moveBus(map, conductores[0], latitud, longitud);
+            });
             const centerControlDiv = document.createElement("div");
             CenterControl(centerControlDiv, map, trafficLayer, bandera);
             map.controls[google.maps.ControlPosition.RIGHT_CENTER].push(centerControlDiv);
 
-        }
+        };
 
     </script>
 </head>

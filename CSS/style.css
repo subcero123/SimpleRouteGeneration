@@ -86,9 +86,29 @@ z-index: 6;
 	z-index: 1;
 }
 
+
+.divselector{
+    display: flex;
+    padding-left: 30px;
+    padding-top: 10px;
+}
+
+.combo{
+    margin-left: 10px;
+}
+#formulario{
+    display: grid;
+    grid-template-columns: 70px 200px;
+    grid-gap: 10px 10px;
+    text-align: left;
+    padding-left: 30px;
+    padding-top: 10px;
+}
+
 #map {
   height: 400px;
   /* The height is 400 pixels */
   width: 100%;
   /* The width is the width of the web page */
 }
+
