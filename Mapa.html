@@ -14,6 +14,7 @@
     <script>
         var ruta = [];
         var conductores = [];
+        var directionsDisplay;
 
         function CenterControl(controlDiv, map, trafficLayer, bandera) {
             // Set CSS for the control border.
@@ -60,8 +61,18 @@
         };
 
         function trazarRuta(map, label) {
+            var request = {
+                travelMode: google.maps.TravelMode.DRIVING,
+                optimizeWaypoints: true,
+                drivingOptions: {
+                    departureTime: new Date(Date.now()), // for the time N milliseconds from now.
+                }
+            };
+            var rutaAux = [];
+            var directionsService = new google.maps.DirectionsService();
             for (let i = 0; i < ruta.length; i++) {
                 ruta[i].setMap(null);
+
             }
             var ref = firebase.database().ref("User");
             ref.once("value", function(snapshot) {
@@ -74,8 +85,38 @@
                                 lat: latitud,
                                 lng: longitud
                             };
-                            var nombre = ruta.child("nombre").val();
-                            addMarker(actual, map, nombre, ruta, ruta.key, ruta.key);
+                            rutaAux.push(actual);
+                        });
+                    }
+                });
+            });
+            ref.once("value", function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    if (childSnapshot.child("unidad").val() == label) {
+                        var actual = {
+                            lat: childSnapshot.child("location").child("latitude").val(),
+                            lng: childSnapshot.child("location").child("longitude").val()
+                        };
+                        request.origin = actual;
+                        for (var i = 0; i < rutaAux.length; i++) {
+                            if (((actual.lat.toFixed(2)) == (rutaAux[i].lat.toFixed(2))) && ((actual.lng.toFixed(2)) == (rutaAux[i].lng.toFixed(2)))) {
+                                rutaAux.splice(i, 1);
+                            }
+                        }
+                        for (var i = 0; i < rutaAux.length; i++) {
+                            if (i == rutaAux.length - 1) request.destination = rutaAux[i];
+                            else {
+                                if (!request.waypoints) request.waypoints = [];
+                                request.waypoints.push({
+                                    location: rutaAux[i],
+                                });
+
+                            }
+                        }
+                        directionsService.route(request, function(result, status) {
+                            if (status == google.maps.DirectionsStatus.OK) {
+                                directionsDisplay.setDirections(result);
+                            }
                         });
                     }
                 });
@@ -112,11 +153,10 @@
             } else {
                 var marker = new google.maps.Marker({
                     position: location,
-                    label: label,
-                    map: map,
+                    map: map
                 });
-                var mensaje = "Nombre: " + nombre + "\n";
 
+                var mensaje = "Nombre: " + nombre + "\n";
                 var infoWindow = new google.maps.InfoWindow({
                     content: mensaje
                 });
@@ -138,6 +178,8 @@
         function initMap() {
             var marker;
             var directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsDisplay = new google.maps.DirectionsRenderer();
+
             const puebla = {
                 lat: 18.549599,
                 lng: -98.0187898
@@ -158,7 +200,9 @@
             const map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 7,
                 center: puebla,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
             });
+            directionsDisplay.setMap(map);
             // Get a reference to the database service
             var ref = firebase.database().ref("User");
             ref.once("value", function(snapshot) {
