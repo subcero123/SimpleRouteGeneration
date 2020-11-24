@@ -12,6 +12,9 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8Lqfxz2f4eL5krU3uLkKEJ0b7qf_Xblo&callback=initMap&libraries=&v=weekly" defer></script>
     <script>
+        var ruta = [];
+        var conductores = [];
+
         function CenterControl(controlDiv, map, trafficLayer, bandera) {
             // Set CSS for the control border.
             const controlUI = document.createElement("div");
@@ -56,43 +59,72 @@
 
         };
 
-        function addMarker(location, map, nombre, unidad, arreglo, i) {
+        function trazarRuta(map, label) {
+            for (let i = 0; i < ruta.length; i++) {
+                ruta[i].setMap(null);
+            }
+            var ref = firebase.database().ref("User");
+            ref.once("value", function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    if (childSnapshot.child("unidad").val() == label) {
+                        childSnapshot.child("ruta").forEach(function(ruta) {
+                            var latitud = ruta.child("latitud").val();
+                            var longitud = ruta.child("longitud").val();
+                            var actual = {
+                                lat: latitud,
+                                lng: longitud
+                            };
+                            var nombre = ruta.child("nombre").val();
+                            addMarker(actual, map, nombre, ruta, ruta.key, ruta.key);
+                        });
+                    }
+                });
+            });
+        }
+
+        function addMarker(location, map, nombre, arreglo, i, unidad = " ", icon = null) {
 
             var label = {
                 text: unidad,
                 color: "black",
                 fontSize: "20px",
             }
-
-            var icon = {
-                url: "./Imagenes/carro.png", // url
-                scaledSize: new google.maps.Size(15, 30), // scaled size
-                origin: new google.maps.Point(0, 0), // origin
-                anchor: new google.maps.Point(0, 0) // anchor
-            };
-
-
             // Add the marker at the clicked location, and add the next-available label
             // from the array of alphabetical characters.
-            arreglo[i] = new google.maps.Marker({
-                position: location,
-                label: label,
-                map: map,
-                draggable: true,
-                icon: icon
-            });
+            if (icon != null) {
+                var marker = new google.maps.Marker({
+                    position: location,
+                    label: label,
+                    map: map,
+                    draggable: true,
+                    icon: icon
+                });
+                var mensaje = "Nombre: " + nombre + "\n" + "Unidad: " + unidad;
 
+                var infoWindow = new google.maps.InfoWindow({
+                    content: mensaje
+                });
+                google.maps.event.addListener(marker, 'click', function() {
+                    infoWindow.open(map, marker);
+                    trazarRuta(map, unidad);
+                });
+                conductores.push(marker);
+            } else {
+                var marker = new google.maps.Marker({
+                    position: location,
+                    label: label,
+                    map: map,
+                });
+                var mensaje = "Nombre: " + nombre + "\n";
 
-            var mensaje = "Nombre: " + nombre + "\n" + "Unidad: " + unidad;
-
-            var infoWindow = new google.maps.InfoWindow({
-                content: mensaje
-            });
-
-            google.maps.event.addListener(arreglo[i], 'click', function() {
-                infoWindow.open(map, arreglo[i]);
-            });
-            return arreglo;
+                var infoWindow = new google.maps.InfoWindow({
+                    content: mensaje
+                });
+                google.maps.event.addListener(marker, 'click', function() {
+                    infoWindow.open(map, marker);
+                });
+                ruta.push(marker);
+            }
         };
 
         function agregar(location, map) {
@@ -104,19 +136,8 @@
         }
         // Initialize and add the map
         function initMap() {
-
-            var conductores = [];
             var marker;
             var directionsRenderer = new google.maps.DirectionsRenderer();
-            var ruta1 = [
-                [17.95746608, -97.8673808],
-                [17.95834204, -97.8652153],
-                [17.95885852, -97.86520862],
-                [17.95905074, -97.86602113],
-                [17.95917549, -97.86569327],
-                [17.95986467, -97.86816984]
-            ];
-
             const puebla = {
                 lat: 18.549599,
                 lng: -98.0187898
@@ -124,6 +145,13 @@
             var actual = {
                 lat: 0,
                 lng: 0
+            };
+
+            var icon = {
+                url: "./Imagenes/carro.png", // url
+                scaledSize: new google.maps.Size(15, 30), // scaled size
+                origin: new google.maps.Point(0, 0), // origin
+                anchor: new google.maps.Point(0, 0) // anchor
             };
             var bandera = -1;
             const trafficLayer = new google.maps.TrafficLayer();
@@ -134,16 +162,22 @@
             // Get a reference to the database service
             var ref = firebase.database().ref("User");
             ref.once("value", function(snapshot) {
-                var nombre = snapshot.child("nombre").val();
-                var unidad = snapshot.child("unidad").val();
-                actual.lat = snapshot.child("location/latitude").val();
-                actual.lng = snapshot.child("location/longitude").val();
-                addMarker(actual, map, nombre, unidad, conductores, 0);
+
+                snapshot.forEach(function(childSnapshot) {
+                    var nombre = childSnapshot.child("nombre").val();
+                    var unidad = childSnapshot.child("unidad").val();
+                    actual.lat = childSnapshot.child("location/latitude").val();
+                    actual.lng = childSnapshot.child("location/longitude").val();
+                    addMarker(actual, map, nombre, conductores, childSnapshot.key, unidad, icon);
+                });
             });
             ref.on("value", function(snapshot) {
-                var latitud = snapshot.child("location/latitude").val();
-                var longitud = snapshot.child("location/longitude").val();
-                moveBus(map, conductores[0], latitud, longitud);
+                snapshot.forEach(function(childSnapshot) {
+                    var latitud = childSnapshot.child("location/latitude").val();
+                    var longitud = childSnapshot.child("location/longitude").val();
+                    moveBus(map, conductores[childSnapshot.key], latitud, longitud);
+                });
+
             });
             const centerControlDiv = document.createElement("div");
             CenterControl(centerControlDiv, map, trafficLayer, bandera);
