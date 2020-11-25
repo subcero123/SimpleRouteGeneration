@@ -1,44 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>ADA Project</title>
-	<link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:ital,wght@1,300&display=swap" rel="stylesheet"> 
-	<link href="https://fonts.googleapis.com/css2?family=Squada+One&display=swap" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="./CSS/style.css">
-	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADA Project</title>
+    <link rel="stylesheet" type="text/css" href="./CSS/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300&display=swap" rel="stylesheet">
 </head>
+
 <body>
-	<div class="row main-container middle-xs center-xs">
-		<div class="col-md-8 col-sm-10 col-xs-11 col-lg-7">
-			<div class="box">
-				<div class="card animated fadeInUp">
-				<header class="main-header">
-					<nav class="main-nav">
-						<a href="presentacion.html" class="nav-link">Presentacion</a>
-						<a href="menu.html" class="nav-link">Menu</a>
-						<a href="https://www.cs.buap.mx/~zacarias/FZF/" target="_blank" rel="noopener noreferrer"  class="nav-link">Pagina del profesor</a>
-						<a href="Mapa.html"  class="nav-link">Trazar Rutas</a>
-					</nav>	
-				</header>
-				<article class="body animated fadeInDown">
-					<header class="text-center">
-						<img src="./Imagenes/LogoD.jpg" height="200px" alt="Imagen orientada a programacion" >
-						<h1 class="title_font threeD">Proyecto Analisis y Diseño de Algoritmos</h1>
-					</header>
-				</article>
-				<h1 class="red-text title_font threeD">XPress Delivery</h1>
-				<p>Equipo 10</p>
-				<p>Israel Soriano Hernandez 201740570</p>
-				<p>Miguel Santillan Alonso</p>
-				<p>Jesus Alejandro Serrano Graciano</p>
-				<p>Hector Ugarte Ramirez</p>
-				</div>
-			</div>
-		</div>	
-	</div>
-	
+    <ul class="sideScroll">
+        <li><img src="./Imagenes/logo_1.png" alt="Logo JHIM Delivery" class="logo"></li>
+        <li><a class="active" href="#home">Inicio</a></li>
+        <li><a href="Mapa.html">Mapa</a></li>
+        <li><a href="rutas.html">Registro de Ruta</a></li>
+        <li><a href="menu.html">Sucursales</a></li>
+        <li><a href="presentacion.html">About Us</a></li>
+        <footer class="footer-distributed">
+
+            <div class="footer-left">
+                <p>JHIM DELIVERY &copy; 2020</p>
+            </div>
+
+        </footer>
+    </ul>
+    <div class="main">
+        <p class="titulo">JHIM DELIVERY</p>
+        <p class="texto">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere enim purus, et elementum elit volutpat sed. Aliquam ut nunc et augue sagittis viverra. Etiam sapien eros, vulputate ut orci vel, placerat scelerisque lorem. Curabitur egestas nulla nec ornare dignissim. Praesent pretium mauris dolor. Proin volutpat, est et sodales sollicitudin, libero tellus interdum lorem, a ultrices justo felis ac augue. Vestibulum at fringilla eros. Nunc imperdiet nibh vitae ex lacinia vehicula. Curabitur aliquet nisi eu quam congue, quis elementum nibh molestie. Nulla facilisi. Aenean sodales viverra aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Phasellus volutpat ipsum augue, eget laoreet augue lobortis sed. Mauris at lacus dui.
+        </p>
+        <ul class="slider">
+
+            <li>
+                <input type="radio" id="slide1" name="slide" checked>
+                <label for="slide1"></label>
+                <img src="Imagenes/Show/del1.jpg" alt="Panel 1">
+            </li>
+            <li>
+                <input type="radio" id="slide2" name="slide">
+                <label for="slide2"></label>
+                <img src="Imagenes/Show/del2.jpg" alt="Panel 2">
+            </li>
+            <li>
+                <input type="radio" id="slide3" name="slide">
+                <label for="slide3"></label>
+                <img src="Imagenes/Show/del3.jpg" alt="Panel 3">
+            </li>
+        </ul>
+
+
+    </div>
+
 </body>
+
 </html>
