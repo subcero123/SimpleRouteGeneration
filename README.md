@@ -1,4 +1,4 @@
-# Route Generation with multiple stops 
+# Route generator with multiple stops 
 
 JavaScript code that can track vehicles using their GPS location, it also can generate multiple routes for them and send it to them. 
 Visuals are not very good, CSS and HTML only. 
